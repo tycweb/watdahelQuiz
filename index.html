@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Watdahel Quiz</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #0ff, #00f, #0ff);
+      background-size: 600% 600%;
+      animation: neonAnim 15s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Arial', sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    @keyframes neonAnim {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .glass-effect {
+      background: rgba(0, 255, 204, 0.05);
+      border: 2px solid #00ffcc;
+      border-radius: 20px;
+      box-shadow: 0 0 20px #00ffcc, 0 0 40px #00ffcc;
+      padding: 40px 30px;
+      width: 90%;
+      max-width: 400px;
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 25px;
+      background: #00ffcc;
+      border: none;
+      border-radius: 30px;
+      color: #000;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 0 15px #00ffcc;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #00ffee;
+      box-shadow: 0 0 25px #00ffee;
+    }
+
+    input {
+      padding: 10px;
+      margin-top: 15px;
+      width: 80%;
+      border-radius: 10px;
+      border: 2px solid #00ffcc;
+      background: transparent;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    ::placeholder {
+      color: #ccc;
+    }
+
+    .letter {
+      position: absolute;
+      font-size: 24px;
+      font-weight: bold;
+      color: lime;
+      animation: wiggle 0.3s infinite, fall linear infinite;
+      z-index: 999;
+    }
+
+    @keyframes wiggle {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(5deg); }
+      50% { transform: rotate(0deg); }
+      75% { transform: rotate(-5deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    @keyframes fall {
+      from { transform: translateY(-100px); }
+      to { transform: translateY(110vh); }
+    }
+
+    .virus-mode {
+      animation: glitchBackground 0.3s infinite;
+      background: repeating-linear-gradient(
+        45deg,
+        #ff0044,
+        #ff0044 10px,
+        #00ffea 10px,
+        #00ffea 20px
+      );
+    }
+
+    @keyframes glitchBackground {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="glass-effect" id="quiz-container">
+    <h2>Watdahel quiz</h2>
+    <button onclick="startQuiz()">Start Quiz</button>
+  </div>
+
+  <script>
+  const questions = [
+    { q: "5 + 3 =", a: "8" },
+    { q: "12 - 4 =", a: "8" },
+    { q: "6 x 3 =", a: "18" },
+    { q: "49 ÷ 7 =", a: "7" },
+    { q: "√(62500 / 25) =", a: "50" }
+  ];
+
+  let current = 0;
+  let virusMode = false;
+
+  function startQuiz() {
+    showQuestion();
+  }
+
+  function showQuestion() {
+    const container = document.getElementById("quiz-container");
+    container.innerHTML = `
+      <h2>Question ${current + 1}</h2>
+      <p>${questions[current].q}</p>
+      <input id="userAnswer" placeholder="Enter your answer" />
+      <br/>
+      <button onclick="checkAnswer()">Submit</button>
+    `;
+  }
+
+  function checkAnswer() {
+    const userAnswer = document.getElementById("userAnswer").value.trim();
+    const correct = questions[current].a;
+
+    if (userAnswer === correct) {
+      Swal.fire("Correct!", "You're doing great!", "success");
+      current++;
+      if (current < questions.length) {
+        setTimeout(showQuestion, 1000);
+      } else {
+        Swal.fire("Congratulations!", "You've finished the quiz!", "success");
+        document.getElementById("quiz-container").innerHTML = `
+          <h2>Well done!</h2>
+          <button onclick="location.reload()">Play Again</button>
+        `;
+      }
+    } else {
+      Swal.fire({
+        title: 'Watdahel 🗿',
+        text: 'You got it wrong!',
+        icon: 'error',
+        background: 'white',
+        color: 'black',
+        confirmButtonColor: 'green'
+      }).then(() => {
+        activateVirus();
+      });
+    }
+  }
+
+  function activateVirus() {
+    if (virusMode) return;
+    virusMode = true;
+
+    document.body.classList.add('virus-mode');
+    document.getElementById("quiz-container").innerHTML = "<h1 style='color: red;'>VIRUS ACTIVATED!</h1>";
+
+    setInterval(spawnRandomLetter, 50);
+    setInterval(shakeScreen, 50);
+    setInterval(showSweetAlert, 3000);
+    setInterval(showNormalAlert, 5000);
+    setInterval(spawnExtraButton, 2000);
+  }
+
+  function spawnRandomLetter() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const randomChar = chars[Math.floor(Math.random() * chars.length)];
+    const letter = document.createElement('div');
+    letter.className = 'letter';
+    letter.innerText = randomChar;
+    letter.style.left = Math.random() * window.innerWidth + 'px';
+    letter.style.top = '-50px';
+    letter.style.animationDuration = (Math.random() * 3 + 2) + 's';
+    document.body.appendChild(letter);
+
+    setTimeout(() => {
+      letter.remove();
+    }, 6000);
+  }
+
+  function shakeScreen() {
+    document.body.style.marginLeft = (Math.random() * 10 - 5) + 'px';
+    document.body.style.marginTop = (Math.random() * 10 - 5) + 'px';
+  }
+
+  function showSweetAlert() {
+    const titles = [
+      '⚠️ DEVICE BREACH ⚠️',
+      '☠️ TROJAN FOUND',
+      '❗ MOBILE ALERT ❗',
+      '⚡ CRITICAL MOBILE ERROR'
+    ];
+    const messages = [
+      'Memory leak detected!',
+      'Unauthorized access detected!',
+      'Mobile overheating!',
+      'Malware spreading rapidly!'
+    ];
+    Swal.fire({
+      title: titles[Math.floor(Math.random() * titles.length)],
+      text: messages[Math.floor(Math.random() * messages.length)],
+      icon: 'error',
+      background: '#330000',
+      color: '#ff0000',
+      confirmButtonColor: '#ff0000'
+    });
+  }
+
+  function showNormalAlert() {
+    const normalMessages = [
+      'Storage almost full!',
+      'Virus is encrypting your data!',
+      'Critical failure incoming!',
+      'Battery virus detected!',
+      'Self-destruct mode activated!'
+    ];
+    alert(normalMessages[Math.floor(Math.random() * normalMessages.length)]);
+  }
+
+  function spawnExtraButton() {
+    const newButton = document.createElement('button');
+    newButton.innerText = 'tyce!';
+    newButton.style.position = 'fixed';
+    newButton.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+    newButton.style.top = Math.random() * (window.innerHeight - 50) + 'px';
+    newButton.style.zIndex = 9999;
+    newButton.style.padding = '10px 20px';
+    newButton.style.fontSize = '16px';
+    newButton.style.backgroundColor = 'red';
+    newButton.style.color = 'white';
+    newButton.style.border = '2px solid white';
+    newButton.style.borderRadius = '10px';
+    newButton.style.cursor = 'pointer';
+    newButton.onclick = () => {
+      showSweetAlert();
+      shakeScreen();
+    };
+    document.body.appendChild(newButton);
+  }
+</script>
+</body>
+</html>
