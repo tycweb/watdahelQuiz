@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Watdahel Quiz</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
   <style>
     * {
       box-sizing: border-box;
@@ -126,6 +125,10 @@
     <button onclick="startQuiz()">Start Quiz</button>
   </div>
 
+  <!-- Audio for wrong answer -->
+  <audio id="wrongSound" src="https://tycweb.github.io/watdahelQuiz/c6iy_2025-04-29-12-07-13_1745899633666.mp3"
+  preload="auto"></audio>
+
   <script>
   const questions = [
     { q: "5 + 3 =", a: "8" },
@@ -178,6 +181,7 @@
         color: 'black',
         confirmButtonColor: 'green'
       }).then(() => {
+        document.getElementById("wrongSound").play();
         activateVirus();
       });
     }
@@ -272,6 +276,6 @@
     };
     document.body.appendChild(newButton);
   }
-</script>
+  </script>
 </body>
 </html>
